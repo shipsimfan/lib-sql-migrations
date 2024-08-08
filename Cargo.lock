@@ -5,7 +5,7 @@ version = 3
 [[package]]
 name = "sql"
 version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-sql#82443b63a08c13e625214845f855fa9c004e8a73"
+source = "git+https://github.com/shipsimfan/lib-sql#c968ad1f0e8c28f81f9765e42209d07da647fa22"
 
 [[package]]
 name = "sql-migrations"

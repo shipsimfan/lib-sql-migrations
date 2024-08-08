@@ -47,5 +47,5 @@ fn augment_sql(original: String, path: &Path) -> String {
 
     sql.push_str("END TRANSACTION;");
 
-    todo!()
+    sql
 }

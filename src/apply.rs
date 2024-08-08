@@ -25,7 +25,9 @@ fn apply_migration<C: Connection>(
     })?;
 
     if up {
-        sql = augment_sql(sql, migration);
+        sql = augment_up_sql(sql, migration);
+    } else {
+        augment_down_sql(&mut sql, migration);
     }
 
     connection.execute(&sql).map_err(|error| {
@@ -33,14 +35,22 @@ fn apply_migration<C: Connection>(
     })
 }
 
-fn augment_sql(original: String, path: &Path) -> String {
+fn augment_down_sql(sql: &mut String, path: &Path) {
+    let migration_name = &path.file_stem().unwrap().to_string_lossy();
+
+    sql.push_str("\nDELETE FROM applied_migration WHERE name = '");
+    sql.push_str(&migration_name);
+    sql.push_str("';");
+}
+
+fn augment_up_sql(original: String, path: &Path) -> String {
+    let migration_name = &path.file_stem().unwrap().to_string_lossy();
+
     let mut sql = "BEGIN TRANSACTION;\n".to_string();
 
     sql.push_str(&original);
-
     sql.push('\n');
 
-    let migration_name = &path.file_stem().unwrap().to_string_lossy();
     sql.push_str("INSERT INTO applied_migration (name) VALUES ('");
     sql.push_str(&migration_name);
     sql.push_str("');\n");

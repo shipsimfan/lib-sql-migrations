@@ -8,6 +8,15 @@ pub enum ApplyMigrationError {
 
     /// Failed to get the applied migrations
     GetAppliedMigrationsFailed(String),
+
+    /// Failed to create the applied migrations table
+    CreateAppliedMigrationsTableFailed(String),
+
+    /// Failed to read a migration file
+    ReadMigrationFileFailed(std::io::Error, PathBuf),
+
+    /// Failed to apply a migration
+    ApplyMigrationFailed(String, PathBuf),
 }
 
 impl std::error::Error for ApplyMigrationError {}
@@ -26,6 +35,25 @@ impl std::fmt::Display for ApplyMigrationError {
                 "unable to get the currently applied migrations - {}",
                 error
             ),
+            ApplyMigrationError::ReadMigrationFileFailed(error, path) => write!(
+                f,
+                "unable to read migration \"{}\" - {}",
+                path.display(),
+                error
+            ),
+            ApplyMigrationError::ApplyMigrationFailed(error, path) => write!(
+                f,
+                "unable to apply migration \"{}\" - {}",
+                path.display(),
+                error
+            ),
+            ApplyMigrationError::CreateAppliedMigrationsTableFailed(error) => {
+                write!(
+                    f,
+                    "unable to create the \"applied_migrations\" table - {}",
+                    error
+                )
+            }
         }
     }
 }

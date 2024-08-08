@@ -1,43 +1,51 @@
-use crate::db::DatabaseOpenError;
-use sqlite::{sql::Connection, SQLite3Connection};
-use std::{
-    fmt::Display,
-    path::{Path, PathBuf},
-};
-
-#[derive(Debug)]
-pub enum ApplyMigrationError {
-    File(std::io::Error),
-    SQL(String),
-}
+use crate::ApplyMigrationError;
+use sql::Connection;
+use std::path::{Path, PathBuf};
 
 /// Applies `migrations` to the database
-pub(super) fn apply_migrations(
-    connection: &SQLite3Connection,
-    migrations: Vec<PathBuf>,
-) -> Result<(), DatabaseOpenError> {
+pub(super) fn apply_migrations<C: Connection>(
+    connection: &C,
+    migrations: &[PathBuf],
+    up: bool,
+) -> Result<(), ApplyMigrationError> {
     for migration in migrations {
-        apply_migration(connection, &migration)
-            .map_err(|error| DatabaseOpenError::ApplyMigrationFailed(error, migration))?;
+        apply_migration(connection, migration, up)?;
     }
 
     Ok(())
 }
 
-fn apply_migration(
-    connection: &SQLite3Connection,
+fn apply_migration<C: Connection>(
+    connection: &C,
     migration: &Path,
+    up: bool,
 ) -> Result<(), ApplyMigrationError> {
-    let sql = std::fs::read_to_string(migration).map_err(ApplyMigrationError::File)?;
+    let mut sql = std::fs::read_to_string(migration).map_err(|error| {
+        ApplyMigrationError::ReadMigrationFileFailed(error, migration.to_path_buf())
+    })?;
 
-    connection.execute(&sql).map_err(ApplyMigrationError::SQL)
+    if up {
+        sql = augment_sql(sql, migration);
+    }
+
+    connection.execute(&sql).map_err(|error| {
+        ApplyMigrationError::ApplyMigrationFailed(error.to_string(), migration.to_path_buf())
+    })
 }
 
-impl Display for ApplyMigrationError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ApplyMigrationError::File(error) => error.fmt(f),
-            ApplyMigrationError::SQL(error) => error.fmt(f),
-        }
-    }
+fn augment_sql(original: String, path: &Path) -> String {
+    let mut sql = "BEGIN TRANSACTION;\n".to_string();
+
+    sql.push_str(&original);
+
+    sql.push('\n');
+
+    let migration_name = &path.file_stem().unwrap().to_string_lossy();
+    sql.push_str("INSERT INTO applied_migration (name) VALUES ('");
+    sql.push_str(&migration_name);
+    sql.push_str("');\n");
+
+    sql.push_str("END TRANSACTION;");
+
+    todo!()
 }

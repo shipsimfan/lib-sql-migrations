@@ -6,11 +6,13 @@
 #![deny(rustdoc::redundant_explicit_links)]
 #![warn(rustdoc::broken_intra_doc_links)]
 
+use apply::apply_migrations;
 use required_migrations::RequiredMigrations;
 use sql::Connection;
 use std::path::Path;
 
 mod applied_migrations;
+mod apply;
 mod error;
 mod required_migrations;
 
@@ -32,5 +34,16 @@ pub fn apply_required_migrations<C: Connection, P: AsRef<Path>>(
 ) -> Result<AppliedMigrations, ApplyMigrationError> {
     let required_migrations = RequiredMigrations::get(connection, migrations.as_ref())?;
 
-    todo!()
+    if required_migrations.table_creation_required() {
+        connection
+            .execute(include_str!("create-applied-migrations.sql"))
+            .map_err(|error| {
+                ApplyMigrationError::CreateAppliedMigrationsTableFailed(error.to_string())
+            })?;
+    }
+
+    apply_migrations(connection, required_migrations.down(), false)?;
+    apply_migrations(connection, required_migrations.up(), true)?;
+
+    Ok(required_migrations.into())
 }

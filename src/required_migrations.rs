@@ -7,11 +7,14 @@ use std::{
 
 /// The migrations the need to applied to the database
 pub(crate) struct RequiredMigrations {
+    /// Does the applied migrations table need to be created?
+    table_creation_required: bool,
+
     /// The migrations which must be undone
-    pub(crate) down: Vec<PathBuf>,
+    down: Vec<PathBuf>,
 
     /// The migrations which must be newly applied
-    pub(crate) up: Vec<PathBuf>,
+    up: Vec<PathBuf>,
 }
 
 impl RequiredMigrations {
@@ -32,16 +35,37 @@ impl RequiredMigrations {
         // Get the current list of applied migrations
         let applied_migrations = get_applied_migrations(connection)
             .map_err(ApplyMigrationError::GetAppliedMigrationsFailed)?;
+        let table_creation_required = applied_migrations.is_none();
+        let applied_migrations = applied_migrations.unwrap_or(Vec::new());
 
         // Diff the available migrations against the applied migrations
-        let mut required_migrations =
-            diff_migrations(path, available_migrations, applied_migrations);
+        let mut required_migrations = diff_migrations(
+            path,
+            table_creation_required,
+            available_migrations,
+            applied_migrations,
+        );
 
         // Sort the resulting lists
         required_migrations.up.sort();
         required_migrations.down.sort_by(|a, b| a.cmp(b).reverse());
 
         Ok(required_migrations)
+    }
+
+    /// Gets the down migrations which need to be applied
+    pub(crate) fn down(&self) -> &[PathBuf] {
+        &self.down
+    }
+
+    /// Gets the up migrations which need to be applied
+    pub(crate) fn up(&self) -> &[PathBuf] {
+        &self.up
+    }
+
+    /// Does the applied migrations table need to be created?
+    pub(crate) fn table_creation_required(&self) -> bool {
+        self.table_creation_required
     }
 }
 
@@ -76,6 +100,10 @@ fn get_available_migrations(directory: &Path) -> std::io::Result<Vec<(PathBuf, S
             .as_encoded_bytes()
             .strip_suffix(b".up.sql")
         {
+            if migration_name.len() == 0 {
+                continue;
+            }
+
             available_migrations.push((
                 entry.path(),
                 String::from_utf8_lossy(migration_name).to_string(),
@@ -87,7 +115,7 @@ fn get_available_migrations(directory: &Path) -> std::io::Result<Vec<(PathBuf, S
 }
 
 /// Gets the list of migrations which have been applied to the database
-fn get_applied_migrations<C: Connection>(connection: &C) -> Result<Vec<String>, String> {
+fn get_applied_migrations<C: Connection>(connection: &C) -> Result<Option<Vec<String>>, String> {
     // Check if the table exists
     let mut rows = connection
         .prepare(
@@ -99,7 +127,7 @@ fn get_applied_migrations<C: Connection>(connection: &C) -> Result<Vec<String>, 
 
     let count = rows.next().map(|row| row.unwrap_or(0)).unwrap_or(0);
     if count == 0 {
-        return Ok(Vec::new());
+        return Ok(None);
     }
 
     // Read the columns from the table
@@ -113,12 +141,13 @@ fn get_applied_migrations<C: Connection>(connection: &C) -> Result<Vec<String>, 
         applied_migrations.push(row.map_err(|error| error.to_string())?);
     }
 
-    Ok(applied_migrations)
+    Ok(Some(applied_migrations))
 }
 
 /// Gets the required migrations from the difference between the available and applied migrations
 fn diff_migrations(
     base_path: &Path,
+    table_creation_required: bool,
     mut available_migrations: Vec<(PathBuf, String)>,
     mut applied_migrations: Vec<String>,
 ) -> RequiredMigrations {
@@ -141,6 +170,7 @@ fn diff_migrations(
     }
 
     RequiredMigrations {
+        table_creation_required,
         down: applied_migrations
             .into_iter()
             .map(|migration| Path::new(base_path).join(format!("{}.down.sql", migration)))

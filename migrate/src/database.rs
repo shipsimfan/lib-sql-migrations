@@ -43,6 +43,25 @@ impl OpenDatabase {
             OpenDatabase::SQLite(db) => Ok(sql_migrations::get_required_migrations(db, path)?),
         }
     }
+
+    /// Apply the required migrations to the database
+    pub fn migrate(&self, path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+        match self {
+            OpenDatabase::SQLite(db) => Ok(sql_migrations::migrate(db, path).map(|_| ())?),
+        }
+    }
+
+    /// Apply the required migrations to the database
+    pub fn apply_migrations(
+        &self,
+        migrations: &Migrations,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        match self {
+            OpenDatabase::SQLite(db) => {
+                Ok(sql_migrations::apply_migrations(migrations, db).map(|_| ())?)
+            }
+        }
+    }
 }
 
 impl std::error::Error for NoDatabaseSpecified {}

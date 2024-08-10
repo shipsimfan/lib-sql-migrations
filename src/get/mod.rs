@@ -16,7 +16,7 @@ pub fn get_required_migrations<C: Connection>(
     let mut available_migrations = get_available_migrations(path)?;
     let (mut applied_migrations, table_creation) = get_applied_migrations(db)?
         .map(|applied_migrations| (applied_migrations, false))
-        .unwrap_or((Vec::new(), false));
+        .unwrap_or((Vec::new(), true));
 
     // Remove any migrations that appear in both the available migrations and the applied
     // migrations as they do not need to be added or removed
@@ -26,7 +26,7 @@ pub fn get_required_migrations<C: Connection>(
 
         let mut found = false;
         for j in 0..available_migrations.len() {
-            let available_migration = &available_migrations[i];
+            let available_migration = &available_migrations[j];
 
             if applied_migration.name() == available_migration.name() {
                 available_migrations.swap_remove(j);
@@ -43,6 +43,7 @@ pub fn get_required_migrations<C: Connection>(
     }
 
     Ok(Migrations::new(
+        path.to_path_buf(),
         available_migrations,
         applied_migrations,
         table_creation,

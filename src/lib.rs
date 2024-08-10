@@ -9,11 +9,13 @@
 use sql::Connection;
 use std::path::Path;
 
+mod apply;
 mod error;
 mod get;
 mod migration;
 mod migrations;
 
+pub use apply::apply_migrations;
 pub use error::MigrationError;
 pub use get::{get_applied_migrations, get_available_migrations, get_required_migrations};
 pub use migration::{DownMigration, UpMigration};
@@ -33,6 +35,8 @@ pub fn migrate<C: Connection, P: AsRef<Path>>(
     path: P,
 ) -> Result<Migrations, MigrationError> {
     let migrations = get_required_migrations(db, path.as_ref())?;
+
+    apply_migrations(&migrations, db)?;
 
     Ok(migrations)
 }

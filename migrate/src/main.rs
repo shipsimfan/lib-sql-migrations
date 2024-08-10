@@ -1,6 +1,9 @@
 use args::{Command, Database, Options};
 
 mod applied;
+mod apply;
+mod apply_down;
+mod apply_up;
 mod args;
 mod available;
 mod database;
@@ -28,6 +31,8 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         Command::RequiredDown => {
             required_down::required_down(options.database(), options.migration_path())
         }
-        Command::Apply => todo!(),
+        Command::Apply => apply::apply(options.database(), options.migration_path()),
+        Command::ApplyUp => apply_up::apply_up(options.database(), options.migration_path()),
+        Command::ApplyDown => apply_down::apply_down(options.database(), options.migration_path()),
     }
 }

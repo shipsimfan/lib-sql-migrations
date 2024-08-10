@@ -1,5 +1,7 @@
 use argparse::{commands, help_flag, parser, parsing_flag, version_flag};
-use command::{APPLIED, AVAILABLE, REQUIRED, REQUIRED_DOWN, REQUIRED_UP};
+use command::{
+    APPLIED, APPLY, APPLY_DOWN, APPLY_UP, AVAILABLE, REQUIRED, REQUIRED_DOWN, REQUIRED_UP,
+};
 use std::path::{Path, PathBuf};
 
 mod command;
@@ -32,7 +34,10 @@ parser! { PARSER -> Options
         APPLIED,
         REQUIRED,
         REQUIRED_DOWN,
-        REQUIRED_UP
+        REQUIRED_UP,
+        APPLY,
+        APPLY_DOWN,
+        APPLY_UP
     ].required(&"Missing command")
     [
         parsing_flag!(

@@ -1,5 +1,9 @@
-[package]
-name = "sql-migrations"
+[workspace]
+default-members = [".", "migrate"]
+
+members = [".", "migrate"]
+
+[workspace.package]
 version = "0.1.0"
 authors = ["Lance Hart <me@lancehart.ca>"]
 edition = "2021"
@@ -7,6 +11,18 @@ description = "Implementation for tracking SQL migrations"
 repository = "https://github.com/shipsimfan/lib-sql-migrations"
 license = "GPL-3.0-or-later"
 publish = false
+
+
+[package]
+name = "sql-migrations"
+
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+description.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
 
 [dependencies]
 sql.git = "https://github.com/shipsimfan/lib-sql"

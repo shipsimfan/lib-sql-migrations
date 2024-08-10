@@ -1,58 +1,34 @@
 use std::path::PathBuf;
 
-/// An error that can occur while apply migrations to a database
+/// An error that can occur while migrating a database
 #[derive(Debug)]
-pub enum ApplyMigrationError {
-    /// Getting the available migrations failed
-    GetAvailableMigrationsFailed(std::io::Error, PathBuf),
+pub enum MigrationError {
+    /// Opening the migrations folder failed
+    OpenMigrationsFailed(std::io::Error, PathBuf),
+
+    /// Failed to check if the "applied_migration" table exists
+    TableCheckFailed(String),
 
     /// Failed to get the applied migrations
     GetAppliedMigrationsFailed(String),
-
-    /// Failed to create the applied migrations table
-    CreateAppliedMigrationsTableFailed(String),
-
-    /// Failed to read a migration file
-    ReadMigrationFileFailed(std::io::Error, PathBuf),
-
-    /// Failed to apply a migration
-    ApplyMigrationFailed(String, PathBuf),
 }
 
-impl std::error::Error for ApplyMigrationError {}
+impl std::error::Error for MigrationError {}
 
-impl std::fmt::Display for ApplyMigrationError {
+impl std::fmt::Display for MigrationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ApplyMigrationError::GetAvailableMigrationsFailed(error, path) => write!(
+            MigrationError::OpenMigrationsFailed(error, path) => write!(
                 f,
-                "unable to get the available migrations at \"{}\" - {}",
+                "unable to open migrations directory \"{}\" - {}",
                 path.display(),
                 error
             ),
-            ApplyMigrationError::GetAppliedMigrationsFailed(error) => write!(
-                f,
-                "unable to get the currently applied migrations - {}",
-                error
-            ),
-            ApplyMigrationError::ReadMigrationFileFailed(error, path) => write!(
-                f,
-                "unable to read migration \"{}\" - {}",
-                path.display(),
-                error
-            ),
-            ApplyMigrationError::ApplyMigrationFailed(error, path) => write!(
-                f,
-                "unable to apply migration \"{}\" - {}",
-                path.display(),
-                error
-            ),
-            ApplyMigrationError::CreateAppliedMigrationsTableFailed(error) => {
-                write!(
-                    f,
-                    "unable to create the \"applied_migrations\" table - {}",
-                    error
-                )
+            MigrationError::TableCheckFailed(error) => {
+                write!(f, "unable to check if the table exists - {}", error)
+            }
+            MigrationError::GetAppliedMigrationsFailed(error) => {
+                write!(f, "unable to get the applied migrations - {}", error)
             }
         }
     }

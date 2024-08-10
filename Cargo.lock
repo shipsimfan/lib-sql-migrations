@@ -3,6 +3,53 @@
 version = 3
 
 [[package]]
+name = "argparse"
+version = "3.0.0"
+source = "git+https://github.com/shipsimfan/lib-argparse#a66f7717947a35dd99da02a42df060fc27269f5c"
+dependencies = [
+ "macros 3.0.0",
+]
+
+[[package]]
+name = "base"
+version = "0.1.0"
+source = "git+https://github.com/shipsimfan/lib-proc-macro-util#466265c30de3e57aa0365bac5e4de4e54bee56c3"
+
+[[package]]
+name = "macros"
+version = "0.1.0"
+source = "git+https://github.com/shipsimfan/lib-proc-macro-util#466265c30de3e57aa0365bac5e4de4e54bee56c3"
+dependencies = [
+ "base",
+]
+
+[[package]]
+name = "macros"
+version = "3.0.0"
+source = "git+https://github.com/shipsimfan/lib-argparse#a66f7717947a35dd99da02a42df060fc27269f5c"
+dependencies = [
+ "proc-macro-util",
+]
+
+[[package]]
+name = "migrate"
+version = "0.1.0"
+dependencies = [
+ "argparse",
+ "sql-migrations",
+ "sqlite",
+]
+
+[[package]]
+name = "proc-macro-util"
+version = "0.1.0"
+source = "git+https://github.com/shipsimfan/lib-proc-macro-util#466265c30de3e57aa0365bac5e4de4e54bee56c3"
+dependencies = [
+ "base",
+ "macros 0.1.0",
+]
+
+[[package]]
 name = "sql"
 version = "0.1.0"
 source = "git+https://github.com/shipsimfan/lib-sql#c968ad1f0e8c28f81f9765e42209d07da647fa22"
@@ -13,3 +60,17 @@ version = "0.1.0"
 dependencies = [
  "sql",
 ]
+
+[[package]]
+name = "sqlite"
+version = "0.1.0"
+source = "git+https://github.com/shipsimfan/lib-sql#c968ad1f0e8c28f81f9765e42209d07da647fa22"
+dependencies = [
+ "sql",
+ "sqlite3",
+]
+
+[[package]]
+name = "sqlite3"
+version = "0.1.0"
+source = "git+https://github.com/shipsimfan/lib-sqlite3#cbdc992bd37504f7b07ea1f41296636c2d247ca1"

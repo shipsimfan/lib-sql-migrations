@@ -1,0 +1,17 @@
+[package]
+name = "migrate"
+
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+description.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+sql-migrations.path = ".."
+
+argparse.git = "https://github.com/shipsimfan/lib-argparse"
+
+sqlite.git = "https://github.com/shipsimfan/lib-sql"

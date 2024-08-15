@@ -6,6 +6,7 @@ mod apply_down;
 mod apply_up;
 mod args;
 mod available;
+mod create;
 mod database;
 mod required;
 mod required_down;
@@ -34,5 +35,6 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         Command::Apply => apply::apply(options.database(), options.migration_path()),
         Command::ApplyUp => apply_up::apply_up(options.database(), options.migration_path()),
         Command::ApplyDown => apply_down::apply_down(options.database(), options.migration_path()),
+        Command::Create(name) => create::create(options.migration_path(), name),
     }
 }

@@ -7,5 +7,8 @@ mod validate_name;
 pub use down::DownMigration;
 pub use up::UpMigration;
 
-const DOWN_SUFFIX: &str = ".down.sql";
-const UP_SUFFIX: &str = ".up.sql";
+/// The ending for down migration file names
+pub const DOWN_SUFFIX: &str = ".down.sql";
+
+/// The ending for up migration file names
+pub const UP_SUFFIX: &str = ".up.sql";

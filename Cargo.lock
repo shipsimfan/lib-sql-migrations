@@ -16,6 +16,11 @@ version = "0.1.0"
 source = "git+https://github.com/shipsimfan/lib-proc-macro-util#466265c30de3e57aa0365bac5e4de4e54bee56c3"
 
 [[package]]
+name = "linux"
+version = "0.1.0"
+source = "git+https://github.com/shipsimfan/lib-linux#dd77885b4300058bbf465d8d5cf78b8e032dab9b"
+
+[[package]]
 name = "macros"
 version = "0.1.0"
 source = "git+https://github.com/shipsimfan/lib-proc-macro-util#466265c30de3e57aa0365bac5e4de4e54bee56c3"
@@ -38,6 +43,7 @@ dependencies = [
  "argparse",
  "sql-migrations",
  "sqlite",
+ "time",
 ]
 
 [[package]]
@@ -74,3 +80,17 @@ dependencies = [
 name = "sqlite3"
 version = "0.1.0"
 source = "git+https://github.com/shipsimfan/lib-sqlite3#cbdc992bd37504f7b07ea1f41296636c2d247ca1"
+
+[[package]]
+name = "time"
+version = "0.0.0"
+source = "git+https://github.com/shipsimfan/lib-time#f3ff0d1007a9a3e385a549e1c038e4c62ac06304"
+dependencies = [
+ "linux",
+ "win32",
+]
+
+[[package]]
+name = "win32"
+version = "0.1.0"
+source = "git+https://github.com/shipsimfan/lib-win32#422ec8c309d14cba4cbef13119931f5449e60d00"

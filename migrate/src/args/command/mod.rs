@@ -3,6 +3,7 @@ mod apply;
 mod apply_down;
 mod apply_up;
 mod available;
+mod create;
 mod required;
 mod required_down;
 mod required_up;
@@ -12,12 +13,13 @@ pub(super) use apply::APPLY;
 pub(super) use apply_down::APPLY_DOWN;
 pub(super) use apply_up::APPLY_UP;
 pub(super) use available::AVAILABLE;
+pub(super) use create::CREATE;
 pub(super) use required::REQUIRED;
 pub(super) use required_down::REQUIRED_DOWN;
 pub(super) use required_up::REQUIRED_UP;
 
 /// The selected command
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Command {
     /// List the available migrations
     Available,
@@ -42,4 +44,7 @@ pub enum Command {
 
     /// Apply all required down migrations
     ApplyDown,
+
+    /// Create a new pair of migration files
+    Create(String),
 }

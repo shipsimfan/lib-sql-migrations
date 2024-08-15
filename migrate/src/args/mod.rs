@@ -1,6 +1,6 @@
 use argparse::{commands, help_flag, parser, parsing_flag, version_flag};
 use command::{
-    APPLIED, APPLY, APPLY_DOWN, APPLY_UP, AVAILABLE, REQUIRED, REQUIRED_DOWN, REQUIRED_UP,
+    APPLIED, APPLY, APPLY_DOWN, APPLY_UP, AVAILABLE, CREATE, REQUIRED, REQUIRED_DOWN, REQUIRED_UP,
 };
 use std::path::{Path, PathBuf};
 
@@ -37,7 +37,8 @@ parser! { PARSER -> Options
         REQUIRED_UP,
         APPLY,
         APPLY_DOWN,
-        APPLY_UP
+        APPLY_UP,
+        CREATE,
     ].required(&"Missing command")
     [
         parsing_flag!(
@@ -78,8 +79,8 @@ impl Options {
     }
 
     /// Gets the command to run
-    pub fn command(&self) -> Command {
-        self.command
+    pub fn command(&self) -> &Command {
+        &self.command
     }
 
     /// Gets the path to the migrations

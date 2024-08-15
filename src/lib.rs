@@ -18,7 +18,7 @@ mod migrations;
 pub use apply::apply_migrations;
 pub use error::MigrationError;
 pub use get::{get_applied_migrations, get_available_migrations, get_required_migrations};
-pub use migration::{DownMigration, UpMigration};
+pub use migration::{DownMigration, UpMigration, DOWN_SUFFIX, UP_SUFFIX};
 pub use migrations::Migrations;
 
 /// Applies the migrations in the folder at `migrations` to the database connected on `db` that

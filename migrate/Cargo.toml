@@ -13,5 +13,6 @@ publish.workspace = true
 sql-migrations.path = ".."
 
 argparse.git = "https://github.com/shipsimfan/lib-argparse"
+time.git = "https://github.com/shipsimfan/lib-time"
 
 sqlite.git = "https://github.com/shipsimfan/lib-sql"

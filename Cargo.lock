@@ -58,7 +58,7 @@ dependencies = [
 [[package]]
 name = "sql"
 version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-sql#f8ad59f0de24e50c67a26b6099aade6861a20d1d"
+source = "git+https://github.com/shipsimfan/lib-sql#c9fab3240d190dd7f9c393a9f59c9f53cd5a65ab"
 
 [[package]]
 name = "sql-migrations"
@@ -70,7 +70,7 @@ dependencies = [
 [[package]]
 name = "sqlite"
 version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-sql#f8ad59f0de24e50c67a26b6099aade6861a20d1d"
+source = "git+https://github.com/shipsimfan/lib-sql#c9fab3240d190dd7f9c393a9f59c9f53cd5a65ab"
 dependencies = [
  "sql",
  "sqlite3",
@@ -79,7 +79,7 @@ dependencies = [
 [[package]]
 name = "sqlite3"
 version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-sqlite3#28188fcd0ecfd40cc9acdecdb05283f9449b8bcf"
+source = "git+https://github.com/shipsimfan/lib-sqlite3#f19a1a97f80c2ad156451edab93db8a7b72bb66a"
 
 [[package]]
 name = "time"

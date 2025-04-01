@@ -10,7 +10,7 @@ pub use available::get_available_migrations;
 
 /// Gets the up and down migrations which must be applied to the database
 pub fn get_required_migrations<C: Connection>(
-    db: &C,
+    db: &mut C,
     path: &Path,
 ) -> Result<Migrations, MigrationError> {
     let mut available_migrations = get_available_migrations(path)?;

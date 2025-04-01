@@ -43,13 +43,11 @@ impl Ord for DownMigration {
 }
 
 impl FromRow for DownMigration {
-    fn from_row<'a, R: sql::Row<'a>>(row: R) -> Result<Self, R::Error> {
+    fn from_row<'a, R: sql::Row<'a>>(mut row: R) -> Result<Self, R::Error> {
         let mut id = None;
         let mut name = None;
 
-        for column in row {
-            let column = column?;
-
+        while let Some(column) = row.next()? {
             match column.name()?.as_str() {
                 "id" => id = Some(column.into_usize()?),
                 "name" => name = Some(column.into_str()?.to_string()),

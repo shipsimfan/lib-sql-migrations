@@ -1,10 +1,10 @@
 use crate::{DownMigration, MigrationError};
-use sql::{Connection, Statement};
+use sql::{Connection, Statement, Transaction};
 
 /// Applies `migrations` to `db`
 pub(super) fn apply_down_migrations<C: Connection>(
     migrations: &[DownMigration],
-    db: &C,
+    db: &mut C,
 ) -> Result<(), MigrationError> {
     for migration in migrations {
         apply_down_migration(migration, db).map_err(|error| {
@@ -15,19 +15,28 @@ pub(super) fn apply_down_migrations<C: Connection>(
     Ok(())
 }
 
-fn apply_down_migration<C: Connection>(migration: &DownMigration, db: &C) -> Result<(), String> {
+fn apply_down_migration<C: Connection>(
+    migration: &DownMigration,
+    db: &mut C,
+) -> Result<(), String> {
+    let mut transaction = db.begin_trasaction().map_err(|error| error.to_string())?;
+
     // Get the down migration sql
-    let sql = get_sql(migration.id(), db)?;
+    let sql = get_sql(migration.id(), &mut transaction)?;
 
     // Execute the down migration
-    db.execute(&sql).map_err(|error| error.to_string())?;
+    transaction
+        .execute(&sql)
+        .map_err(|error| error.to_string())?;
 
     // Remove the migration from the "applied_migration" table
-    remove_migration(migration.id(), db)
+    remove_migration(migration.id(), &mut transaction)?;
+
+    transaction.commit().map_err(|error| error.to_string())
 }
 
-fn get_sql<C: Connection>(id: usize, db: &C) -> Result<String, String> {
-    let mut statement = db
+fn get_sql<'a, T: Transaction<'a>>(id: usize, transaction: &mut T) -> Result<String, String> {
+    let mut statement = transaction
         .prepare("SELECT down_sql FROM applied_migration WHERE id = ?")
         .map_err(|error| error.to_string())?;
 
@@ -43,8 +52,8 @@ fn get_sql<C: Connection>(id: usize, db: &C) -> Result<String, String> {
         .map_err(|error| error.to_string())
 }
 
-fn remove_migration<C: Connection>(id: usize, db: &C) -> Result<(), String> {
-    let mut statement = db
+fn remove_migration<'a, T: Transaction<'a>>(id: usize, transaction: &mut T) -> Result<(), String> {
+    let mut statement = transaction
         .prepare("DELETE FROM applied_migration WHERE id = ?")
         .map_err(|error| error.to_string())?;
 

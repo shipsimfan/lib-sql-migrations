@@ -1,12 +1,12 @@
 use crate::{MigrationError, UpMigration};
-use sql::{Connection, Statement};
+use sql::{Connection, Statement, Transaction};
 use std::path::Path;
 
 /// Applies `migrations` to `db`
 pub(super) fn apply_up_migrations<C: Connection>(
     base_path: &Path,
     migrations: &[UpMigration],
-    db: &C,
+    db: &mut C,
 ) -> Result<(), MigrationError> {
     for migration in migrations {
         apply_up_migration(base_path, migration, db)?;
@@ -18,7 +18,7 @@ pub(super) fn apply_up_migrations<C: Connection>(
 fn apply_up_migration<C: Connection>(
     base_path: &Path,
     migration: &UpMigration,
-    db: &C,
+    db: &mut C,
 ) -> Result<(), MigrationError> {
     // Load the "up" sql
     let mut sql = std::fs::read_to_string(migration.up_source()).map_err(|error| {
@@ -32,12 +32,19 @@ fn apply_up_migration<C: Connection>(
         .map_err(|error| MigrationError::ReadDownFailed(error, down_path))?;
 
     // Execute the sql
-    db.execute(&sql).map_err(|error| {
+    let mut transaction = db.begin_trasaction().map_err(|error| {
+        MigrationError::ApplyUpFailed(error.to_string(), migration.name().to_string())
+    })?;
+    transaction.execute(&sql).map_err(|error| {
         MigrationError::ApplyUpFailed(error.to_string(), migration.name().to_string())
     })?;
 
     // Insert the new migration into the migrations table
-    insert_new_migration(migration.name(), &down_sql, db).map_err(|error| {
+    insert_new_migration(migration.name(), &down_sql, &mut transaction).map_err(|error| {
+        MigrationError::ApplyUpFailed(error.to_string(), migration.name().to_string())
+    })?;
+
+    transaction.commit().map_err(|error| {
         MigrationError::ApplyUpFailed(error.to_string(), migration.name().to_string())
     })
 }
@@ -46,8 +53,12 @@ fn wrap_transaction(sql: String) -> String {
     format!("BEGIN TRANSACTION;\n{}\nCOMMIT;", sql)
 }
 
-fn insert_new_migration<C: Connection>(name: &str, down_sql: &str, db: &C) -> Result<(), String> {
-    let mut statement = db
+fn insert_new_migration<'a, T: Transaction<'a>>(
+    name: &str,
+    down_sql: &str,
+    transaction: &mut T,
+) -> Result<(), String> {
+    let mut statement = transaction
         .prepare("INSERT INTO applied_migration (name, down_sql) VALUES (?, ?)")
         .map_err(|error| error.to_string())?;
 

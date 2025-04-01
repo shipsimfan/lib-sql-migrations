@@ -31,7 +31,7 @@ pub use migrations::Migrations;
 /// To create pairs of migration scripts from a template, run the program that comes with this
 /// library.
 pub fn migrate<C: Connection, P: AsRef<Path>>(
-    db: &C,
+    db: &mut C,
     path: P,
 ) -> Result<Migrations, MigrationError> {
     let migrations = get_required_migrations(db, path.as_ref())?;

@@ -27,7 +27,7 @@ impl OpenDatabase {
 
     /// Gets the migrations that have been applied to this database
     pub fn get_applied_migrations(
-        &self,
+        &mut self,
     ) -> Result<Option<Vec<DownMigration>>, Box<dyn std::error::Error>> {
         match self {
             OpenDatabase::SQLite(db) => Ok(sql_migrations::get_applied_migrations(db)?),
@@ -36,7 +36,7 @@ impl OpenDatabase {
 
     /// Gets the migrations that need to be applied to this database
     pub fn get_required_migrations(
-        &self,
+        &mut self,
         path: &Path,
     ) -> Result<Migrations, Box<dyn std::error::Error>> {
         match self {
@@ -45,7 +45,7 @@ impl OpenDatabase {
     }
 
     /// Apply the required migrations to the database
-    pub fn migrate(&self, path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn migrate(&mut self, path: &Path) -> Result<(), Box<dyn std::error::Error>> {
         match self {
             OpenDatabase::SQLite(db) => Ok(sql_migrations::migrate(db, path).map(|_| ())?),
         }
@@ -53,7 +53,7 @@ impl OpenDatabase {
 
     /// Apply the required migrations to the database
     pub fn apply_migrations(
-        &self,
+        &mut self,
         migrations: &Migrations,
     ) -> Result<(), Box<dyn std::error::Error>> {
         match self {

@@ -6,7 +6,7 @@ pub fn required(
     database: Option<&Database>,
     path: &Path,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let db = OpenDatabase::open(database)?;
+    let mut db = OpenDatabase::open(database)?;
 
     let migrations = db.get_required_migrations(path)?;
 

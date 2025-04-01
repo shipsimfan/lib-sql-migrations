@@ -11,7 +11,7 @@ mod up;
 /// Applies `migrations` to `db`
 pub fn apply_migrations<C: Connection>(
     migrations: &Migrations,
-    db: &C,
+    db: &mut C,
 ) -> Result<(), MigrationError> {
     if migrations.table_creation() {
         create_table(db)?;

@@ -21,10 +21,9 @@ fn apply_up_migration<C: Connection>(
     db: &mut C,
 ) -> Result<(), MigrationError> {
     // Load the "up" sql
-    let mut sql = std::fs::read_to_string(migration.up_source()).map_err(|error| {
+    let sql = std::fs::read_to_string(migration.up_source()).map_err(|error| {
         MigrationError::ReadUpFailed(error, migration.up_source().to_path_buf())
     })?;
-    sql = wrap_transaction(sql);
 
     // Load the "down" sql
     let down_path = migration.down_source(base_path);
@@ -47,10 +46,6 @@ fn apply_up_migration<C: Connection>(
     transaction.commit().map_err(|error| {
         MigrationError::ApplyUpFailed(error.to_string(), migration.name().to_string())
     })
-}
-
-fn wrap_transaction(sql: String) -> String {
-    format!("BEGIN TRANSACTION;\n{}\nCOMMIT;", sql)
 }
 
 fn insert_new_migration<'a, T: Transaction<'a>>(

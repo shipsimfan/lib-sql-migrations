@@ -1,8 +1,8 @@
 use crate::{DownMigration, MigrationError};
-use sql::{Connection, Statement, Transaction};
+use sql::{Connection, SqlContext, Statement, Transaction};
 
 /// Applies `migrations` to `db`
-pub(super) fn apply_down_migrations<C: Connection>(
+pub(super) fn apply_down_migrations<'a, C: Connection<'a>>(
     migrations: &[DownMigration],
     db: &mut C,
 ) -> Result<(), MigrationError> {
@@ -15,7 +15,7 @@ pub(super) fn apply_down_migrations<C: Connection>(
     Ok(())
 }
 
-fn apply_down_migration<C: Connection>(
+fn apply_down_migration<'a, C: Connection<'a>>(
     migration: &DownMigration,
     db: &mut C,
 ) -> Result<(), String> {

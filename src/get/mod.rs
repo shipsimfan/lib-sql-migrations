@@ -9,7 +9,7 @@ pub use applied::get_applied_migrations;
 pub use available::get_available_migrations;
 
 /// Gets the up and down migrations which must be applied to the database
-pub fn get_required_migrations<C: Connection>(
+pub fn get_required_migrations<'a, C: Connection<'a>>(
     db: &mut C,
     path: &Path,
 ) -> Result<Migrations, MigrationError> {

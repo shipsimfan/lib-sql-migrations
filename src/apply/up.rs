@@ -1,9 +1,9 @@
 use crate::{MigrationError, UpMigration};
-use sql::{Connection, Statement, Transaction};
+use sql::{Connection, SqlContext, Statement, Transaction};
 use std::path::Path;
 
 /// Applies `migrations` to `db`
-pub(super) fn apply_up_migrations<C: Connection>(
+pub(super) fn apply_up_migrations<'a, C: Connection<'a>>(
     base_path: &Path,
     migrations: &[UpMigration],
     db: &mut C,
@@ -15,7 +15,7 @@ pub(super) fn apply_up_migrations<C: Connection>(
     Ok(())
 }
 
-fn apply_up_migration<C: Connection>(
+fn apply_up_migration<'a, C: Connection<'a>>(
     base_path: &Path,
     migration: &UpMigration,
     db: &mut C,

@@ -3,7 +3,7 @@ use sql::{Connection, Statement};
 
 /// Gets the migrations which have already been applied to `db`, returning [`None`] if the
 /// "applied_migration" table needs to be created
-pub fn get_applied_migrations<C: Connection>(
+pub fn get_applied_migrations<'a, C: Connection<'a>>(
     db: &mut C,
 ) -> Result<Option<Vec<DownMigration>>, MigrationError> {
     if !does_table_exist(db).map_err(|error| MigrationError::TableCheckFailed(error))? {
@@ -20,7 +20,7 @@ pub fn get_applied_migrations<C: Connection>(
 }
 
 /// Checks if the "applied_migration" table has been created
-fn does_table_exist<C: Connection>(db: &mut C) -> Result<bool, String> {
+fn does_table_exist<'a, C: Connection<'a>>(db: &mut C) -> Result<bool, String> {
     let mut rows = db
         .prepare(
             "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='applied_migration';",

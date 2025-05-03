@@ -30,7 +30,7 @@ pub use migrations::Migrations;
 ///
 /// To create pairs of migration scripts from a template, run the program that comes with this
 /// library.
-pub fn migrate<C: Connection, P: AsRef<Path>>(
+pub fn migrate<'a, C: Connection<'a>, P: AsRef<Path>>(
     db: &mut C,
     path: P,
 ) -> Result<Migrations, MigrationError> {

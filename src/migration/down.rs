@@ -48,9 +48,26 @@ impl FromRow for DownMigration {
         let mut name = None;
 
         while let Some(column) = row.next()? {
-            match column.name()?.as_str() {
-                "id" => id = Some(column.into_usize()?),
-                "name" => name = Some(column.into_str()?.to_string()),
+            match column
+                .name()
+                .map_err(|error| R::Error::invalid_value("column name", error))?
+                .as_str()
+            {
+                "id" => {
+                    id = Some(
+                        column
+                            .into_usize()
+                            .map_err(|error| R::Error::invalid_value("id", error))?,
+                    )
+                }
+                "name" => {
+                    name = Some(
+                        column
+                            .into_str()
+                            .map_err(|error| R::Error::invalid_value("name", error))?
+                            .to_string(),
+                    )
+                }
                 name => {
                     return Err(R::Error::custom(&format_args!(
                         "unknown column name \"{}\"",

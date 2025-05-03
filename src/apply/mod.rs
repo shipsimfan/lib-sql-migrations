@@ -9,7 +9,7 @@ mod table;
 mod up;
 
 /// Applies `migrations` to `db`
-pub fn apply_migrations<C: Connection>(
+pub fn apply_migrations<'a, C: Connection<'a>>(
     migrations: &Migrations,
     db: &mut C,
 ) -> Result<(), MigrationError> {

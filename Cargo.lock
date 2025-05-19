@@ -4,34 +4,21 @@ version = 4
 
 [[package]]
 name = "argparse"
-version = "3.0.0"
-source = "git+https://github.com/shipsimfan/lib-argparse#a66f7717947a35dd99da02a42df060fc27269f5c"
+version = "0.4.0"
+source = "git+https://github.com/shipsimfan/lib-argparse#6627d35e57da9697783fc49cf1dd51184be8d9a6"
 dependencies = [
- "macros 3.0.0",
+ "macros",
 ]
-
-[[package]]
-name = "base"
-version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-proc-macro-util#466265c30de3e57aa0365bac5e4de4e54bee56c3"
 
 [[package]]
 name = "linux"
 version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-linux#dd77885b4300058bbf465d8d5cf78b8e032dab9b"
+source = "git+https://github.com/shipsimfan/lib-linux#41820e2ee319f0a5ee87d00b87b9f44b6fb82a34"
 
 [[package]]
 name = "macros"
-version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-proc-macro-util#466265c30de3e57aa0365bac5e4de4e54bee56c3"
-dependencies = [
- "base",
-]
-
-[[package]]
-name = "macros"
-version = "3.0.0"
-source = "git+https://github.com/shipsimfan/lib-argparse#a66f7717947a35dd99da02a42df060fc27269f5c"
+version = "0.4.0"
+source = "git+https://github.com/shipsimfan/lib-argparse#6627d35e57da9697783fc49cf1dd51184be8d9a6"
 dependencies = [
  "proc-macro-util",
 ]
@@ -49,16 +36,29 @@ dependencies = [
 [[package]]
 name = "proc-macro-util"
 version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-proc-macro-util#466265c30de3e57aa0365bac5e4de4e54bee56c3"
+source = "git+https://github.com/shipsimfan/lib-proc-macro-util#8b8f883f16acea3451622ce81597c93ac62ad722"
 dependencies = [
- "base",
- "macros 0.1.0",
+ "proc-macro-util-base",
+ "proc-macro-util-macros",
+]
+
+[[package]]
+name = "proc-macro-util-base"
+version = "0.1.0"
+source = "git+https://github.com/shipsimfan/lib-proc-macro-util#8b8f883f16acea3451622ce81597c93ac62ad722"
+
+[[package]]
+name = "proc-macro-util-macros"
+version = "0.1.0"
+source = "git+https://github.com/shipsimfan/lib-proc-macro-util#8b8f883f16acea3451622ce81597c93ac62ad722"
+dependencies = [
+ "proc-macro-util-base",
 ]
 
 [[package]]
 name = "sql"
 version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-sql#bfaf4f8d1099c8ade0e1344cbf0397d71e2d7b02"
+source = "git+https://github.com/shipsimfan/lib-sql#105b1dbac13720b73a5b1d5af5d12bd73905e395"
 
 [[package]]
 name = "sql-migrations"
@@ -70,7 +70,7 @@ dependencies = [
 [[package]]
 name = "sqlite"
 version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-sql#bfaf4f8d1099c8ade0e1344cbf0397d71e2d7b02"
+source = "git+https://github.com/shipsimfan/lib-sql#105b1dbac13720b73a5b1d5af5d12bd73905e395"
 dependencies = [
  "sql",
  "sqlite3",
@@ -93,4 +93,4 @@ dependencies = [
 [[package]]
 name = "win32"
 version = "0.1.0"
-source = "git+https://github.com/shipsimfan/lib-win32#422ec8c309d14cba4cbef13119931f5449e60d00"
+source = "git+https://github.com/shipsimfan/lib-win32#aa12ec96d393e5bda883c88f5fbbba3abcf78945"

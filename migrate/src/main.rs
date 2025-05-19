@@ -1,16 +1,11 @@
-use args::{Command, Database, Options};
+use argparse::Command as ArgParseCommand;
+use commands::Command;
+use database::{Database, DatabaseConnectionInfo};
+use options::Options;
 
-mod applied;
-mod apply;
-mod apply_down;
-mod apply_up;
-mod args;
-mod available;
-mod create;
+mod commands;
 mod database;
-mod required;
-mod required_down;
-mod required_up;
+mod options;
 
 fn main() {
     if let Err(error) = run() {
@@ -20,21 +15,10 @@ fn main() {
 }
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
-    let options = Options::parse()?;
+    let options = match Options::parse_env()? {
+        Some(options) => options,
+        None => return Ok(()),
+    };
 
-    match options.command() {
-        Command::Available => available::available(options.migration_path()),
-        Command::Applied => applied::applied(options.database()),
-        Command::Required => required::required(options.database(), options.migration_path()),
-        Command::RequiredUp => {
-            required_up::required_up(options.database(), options.migration_path())
-        }
-        Command::RequiredDown => {
-            required_down::required_down(options.database(), options.migration_path())
-        }
-        Command::Apply => apply::apply(options.database(), options.migration_path()),
-        Command::ApplyUp => apply_up::apply_up(options.database(), options.migration_path()),
-        Command::ApplyDown => apply_down::apply_down(options.database(), options.migration_path()),
-        Command::Create(name) => create::create(options.migration_path(), name),
-    }
+    options.command.execute()
 }
